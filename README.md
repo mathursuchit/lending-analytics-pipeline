@@ -58,7 +58,6 @@ dbt test
 
 Real Lending Club loan data from Kaggle, 90,586 loans issued between 2007 and 2018. Covers the full credit cycle from origination through charge-off, with grades A through F, 36 and 60 month terms, and borrower attributes including FICO score, DTI, annual income, and derogatory marks.
 
-2019 data was excluded because the two source files were captured at different points in time, which created an artificial default rate spike for that vintage.
 
 ## Run locally
 
