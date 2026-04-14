@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: loan_performance_by_grade
+    description: >
+      Loan performance aggregated by risk grade (A-F). Shows default rates,
+      average interest rates, recovery rates, and expected loss per grade tier.
+      Primary input for grade-level risk reporting.
+    columns:
+      - name: risk_grade
+        description: Lender-assigned risk grade
+        data_tests:
+          - unique
+          - not_null
+      - name: total_loans
+        description: Number of loans in this grade
+        data_tests:
+          - not_null
+      - name: default_rate_pct
+        description: Percentage of loans that defaulted or were charged off
+      - name: expected_loss_rate
+        description: Default rate multiplied by average loss given default
+
+  - name: borrower_risk_segments
+    description: >
+      Cross-tabulation of FICO segment, DTI bucket, and income tier.
+      Used to identify which borrower profiles carry the highest default risk —
+      the core question in credit underwriting.
+    columns:
+      - name: fico_segment
+        description: FICO score tier
+        data_tests:
+          - not_null
+      - name: default_rate_pct
+        description: Default rate within this segment combination
+      - name: total_loans
+        description: Loan count (segments with fewer than 5 loans excluded)
+
+  - name: vintage_analysis
+    description: >
+      Monthly origination cohort performance by risk grade. Used to track
+      whether credit quality and default rates are trending up or down
+      across successive loan cohorts — standard lending portfolio analysis.
+    columns:
+      - name: issue_month
+        description: Origination month (cohort identifier)
+        data_tests:
+          - not_null
+      - name: risk_grade
+        description: Risk grade for this cohort slice
+        data_tests:
+          - not_null
+      - name: default_rate_pct
+        description: Default rate for loans in this vintage and grade

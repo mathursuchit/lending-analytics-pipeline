@@ -1,0 +1,7 @@
+lending_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "lending_analytics.duckdb"
+      threads: 4

@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_loans
+    description: >
+      Cleaned and type-cast loan records. One row per loan.
+      No business logic — only renaming, casting, and basic null handling.
+    columns:
+      - name: loan_id
+        description: Unique loan identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: risk_grade
+        description: Lender-assigned risk grade
+        data_tests:
+          - accepted_values:
+              values: ['A', 'B', 'C', 'D', 'E', 'F']
+      - name: loan_status
+        description: Current loan status
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'Fully Paid'
+                - 'Charged Off'
+                - 'Current'
+                - 'Late (31-120 days)'
+                - 'Default'
+      - name: interest_rate_pct
+        description: Annual interest rate (%)
+        data_tests:
+          - not_null
+      - name: loan_amount
+        description: Requested loan amount
+        data_tests:
+          - not_null
+      - name: term_months
+        description: Loan term in months (36 or 60)
+        data_tests:
+          - accepted_values:
+              values: [36, 60]

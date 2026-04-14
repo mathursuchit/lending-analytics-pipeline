@@ -1,0 +1,61 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw loan data loaded from CSV seed
+    schema: main_raw
+    tables:
+      - name: raw_loans
+        description: Raw loan application and performance records
+        columns:
+          - name: loan_id
+            description: Unique loan identifier
+            data_tests:
+              - unique
+              - not_null
+          - name: loan_amnt
+            description: Requested loan amount in USD
+          - name: funded_amnt
+            description: Amount actually funded
+          - name: term
+            description: Loan repayment term (36 or 60 months)
+          - name: int_rate
+            description: Annual interest rate (%)
+          - name: installment
+            description: Monthly payment amount
+          - name: grade
+            description: Loan risk grade assigned by lender (A-F)
+          - name: sub_grade
+            description: Sub-grade within risk tier (e.g. A1-A5)
+          - name: emp_length
+            description: Borrower employment length
+          - name: home_ownership
+            description: Borrower home ownership status
+          - name: annual_inc
+            description: Borrower self-reported annual income
+          - name: issue_date
+            description: Date loan was issued
+          - name: loan_status
+            description: Current loan status
+          - name: purpose
+            description: Borrower-stated loan purpose
+          - name: addr_state
+            description: Borrower state of residence
+          - name: dti
+            description: Debt-to-income ratio
+          - name: delinq_2yrs
+            description: Delinquencies in past 2 years
+          - name: fico_range_low
+            description: Lower bound of borrower FICO score range
+          - name: fico_range_high
+            description: Upper bound of borrower FICO score range
+          - name: open_acc
+            description: Number of open credit lines
+          - name: pub_rec
+            description: Number of derogatory public records
+          - name: revol_util
+            description: Revolving credit utilization rate (%)
+          - name: total_acc
+            description: Total number of credit lines
+          - name: total_pymnt
+            description: Total payment received to date

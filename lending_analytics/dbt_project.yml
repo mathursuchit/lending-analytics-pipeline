@@ -1,0 +1,58 @@
+name: 'lending_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'lending_analytics'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+seeds:
+  lending_analytics:
+    raw_loans:
+      +schema: raw
+      +column_types:
+        loan_id: varchar
+        loan_amnt: double
+        funded_amnt: double
+        term: varchar
+        int_rate: double
+        installment: double
+        grade: varchar
+        sub_grade: varchar
+        emp_length: varchar
+        home_ownership: varchar
+        annual_inc: double
+        issue_date: date
+        loan_status: varchar
+        purpose: varchar
+        addr_state: varchar
+        dti: double
+        delinq_2yrs: integer
+        fico_range_low: integer
+        fico_range_high: integer
+        open_acc: integer
+        pub_rec: integer
+        revol_util: double
+        total_acc: integer
+        total_pymnt: double
+
+models:
+  lending_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts

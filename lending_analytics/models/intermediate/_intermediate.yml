@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: int_loan_performance
+    description: >
+      Row-level performance enrichment for each loan. Adds default flags,
+      recovery rates, FICO segments, DTI buckets, and income tiers.
+      Designed to be reused across multiple mart models without re-deriving logic.
+    columns:
+      - name: loan_id
+        description: Unique loan identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: is_defaulted
+        description: True if loan status is Charged Off or Default
+        data_tests:
+          - not_null
+      - name: recovery_rate
+        description: Total payment received divided by funded amount
+      - name: loss_given_default
+        description: Unrecovered principal as a fraction of funded amount (defaulted loans only)
+      - name: fico_segment
+        description: FICO score bucket (Prime / Near-Prime / Sub-Prime / Deep Sub-Prime)
+        data_tests:
+          - accepted_values:
+              values:
+                - 'Prime (750+)'
+                - 'Near-Prime (700-749)'
+                - 'Sub-Prime (650-699)'
+                - 'Deep Sub-Prime (<650)'
+      - name: dti_segment
+        description: Debt-to-income ratio bucket
+      - name: income_segment
+        description: Annual income tier
