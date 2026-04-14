@@ -1,22 +1,24 @@
 # Lending Analytics Pipeline
 
-A production-style credit analytics pipeline built with **dbt + DuckDB**, modeling 5,000 loan records through a layered data architecture — from raw ingestion to analytics-ready marts.
+A credit analytics pipeline built with dbt and DuckDB, modeling 90,000+ real Lending Club loans through a layered transformation architecture from raw ingestion to analytics-ready marts.
 
 **Live demo:** [mathursuchit-lending-analytics.streamlit.app](https://mathursuchit-lending-analytics.streamlit.app)
 
----
+## Why I built this
+
+Most data analytics portfolios show a notebook with some pandas and a chart. I wanted something that reflects how analytics engineering actually works at a bank or fintech: layered SQL models, testable transformations, and a clear separation between raw data, business logic, and reporting outputs.
+
+The stack here (dbt + DuckDB) maps directly to production setups using dbt + Snowflake or dbt + Redshift. Swapping the adapter is the only change needed.
 
 ## What it does
 
-Takes raw loan application and performance data and transforms it through three model layers into analytics-ready tables used for credit risk reporting:
+Takes raw loan application and performance data and transforms it into three analytics outputs used in credit risk reporting:
 
-- **Default rate by risk grade** — how A through F grades compare on delinquency and expected loss
-- **Borrower risk segmentation** — which FICO/DTI/income combinations carry the highest default risk
-- **Vintage analysis** — whether credit quality is improving or deteriorating across origination cohorts
+- Default rate by risk grade (A through F), with expected loss and interest rate overlays
+- Borrower risk segmentation by FICO score, DTI ratio, and income band
+- Vintage analysis showing how default rates evolve across origination cohorts
 
 These are standard analyses in lending underwriting and portfolio monitoring.
-
----
 
 ## Architecture
 
@@ -24,86 +26,69 @@ These are standard analyses in lending underwriting and portfolio monitoring.
 seeds/raw_loans.csv
     |
     v
-[staging]          stg_loans          — clean, type-cast, rename
+[staging]        stg_loans               clean, type-cast, rename
     |
     v
-[intermediate]     int_loan_performance  — row-level enrichment: default flags,
-    |                                     recovery rates, FICO/DTI segments
+[intermediate]   int_loan_performance    row-level enrichment: default flags,
+    |                                    recovery rates, FICO/DTI segments
     v
-[marts]            loan_performance_by_grade   — aggregated by A-F grade
-                   borrower_risk_segments      — cross-tab by FICO x DTI x income
-                   vintage_analysis            — cohort performance by origination month
+[marts]          loan_performance_by_grade    aggregated by A-F grade
+                 borrower_risk_segments       cross-tab by FICO x DTI x income
+                 vintage_analysis             cohort performance by origination month
     |
     v
-[dashboard]        Streamlit app reading directly from DuckDB
+[dashboard]      Streamlit app reading directly from DuckDB
 ```
 
-**Why DuckDB?**
-Zero infrastructure — runs entirely in-process from a single `.duckdb` file. Identical SQL semantics to Snowflake/Redshift. Perfect for a portable portfolio project that anyone can clone and run.
-
----
-
-## Model layers
-
-| Layer | Materialization | Purpose |
-|---|---|---|
-| Staging | View | Clean raw data — casting, renaming, nullability |
-| Intermediate | View | Row-level business logic reused across marts |
-| Marts | Table | Aggregated, analytics-ready outputs |
-
----
+Staging and intermediate layers are views. Marts are materialized as tables. The Streamlit app reads the pre-built `.duckdb` file directly so there is no dbt runtime needed in production.
 
 ## Tests
 
 21 dbt tests across all layers:
 
-- **Schema tests** — `unique`, `not_null`, `accepted_values` on keys and categorical columns
-- **Custom test** — `assert_default_rate_within_bounds`: portfolio default rate must stay between 1% and 50% (catches data quality drift)
-- **Generic macro** — `positive_values`: reusable test for numeric sanity checks
+- Schema tests: `unique`, `not_null`, `accepted_values` on keys and categorical columns
+- Custom test: `assert_default_rate_within_bounds` checks that the portfolio default rate stays between 1% and 50%, catching data quality drift
+- Generic macro: `positive_values` for numeric sanity checks on loan amounts and rates
 
-Run tests:
 ```bash
 dbt test
 ```
 
----
+## Dataset
+
+Real Lending Club loan data from Kaggle, 90,586 loans issued between 2007 and 2018. Covers the full credit cycle from origination through charge-off, with grades A through F, 36 and 60 month terms, and borrower attributes including FICO score, DTI, annual income, and derogatory marks.
+
+2019 data was excluded because the two source files were captured at different points in time, which created an artificial default rate spike for that vintage.
 
 ## Run locally
 
-**Requirements:** Python 3.11+
+Requires Python 3.11 (dbt-duckdb has a dependency that breaks on 3.12+).
 
 ```bash
 git clone https://github.com/mathursuchit/lending-analytics-pipeline
 cd lending-analytics-pipeline
-pip install -r requirements.txt
+pip install dbt-duckdb duckdb streamlit plotly pandas
 ```
 
-Generate seed data and run the pipeline:
+Run the pipeline:
+
 ```bash
 cd lending_analytics
-python seeds/generate_seeds.py
 dbt seed
 dbt run
 dbt test
 ```
 
 Launch the dashboard:
+
 ```bash
-cd ../dashboard
+cd ..
 streamlit run app.py
 ```
 
----
-
 ## Stack
 
-- **dbt Core 1.8** — data transformation, testing, documentation
-- **DuckDB 1.x** — embedded analytical database (Snowflake-compatible SQL)
-- **Streamlit** — dashboard frontend
-- **Plotly** — interactive charts
-- **Python 3.11**
-
----
+Python 3.11 · dbt Core 1.11 · DuckDB · Streamlit · Plotly
 
 ## Author
 
