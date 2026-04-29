@@ -24,9 +24,9 @@ def load_data():
 
 grade_perf, segments, vintage = load_data()
 
-st.set_page_config(page_title='Lending Analytics Pipeline', page_icon='🏦', layout='wide')
+st.set_page_config(page_title='Lending Analytics Pipeline', page_icon=None, layout='wide')
 
-st.title('🏦 Lending Analytics Pipeline')
+st.title('Lending Analytics Pipeline')
 st.caption('dbt + DuckDB | Staging → Intermediate → Marts | 5,000 loan records')
 
 # --- KPIs ---
